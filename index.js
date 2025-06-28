@@ -62,7 +62,7 @@ const API_URL = "http://localhost:3000/submissions"; // JSON Server
  
 let selectedId = null;
 
-// Handle form submission
+// Handle form submission (POST)
 form.addEventListener('submit', function (e) {
   e.preventDefault();
 
@@ -87,23 +87,15 @@ form.addEventListener('submit', function (e) {
     }
   };
 
-  const method = selectedId ? 'PATCH' : 'POST';
-  const url = selectedId ? `${API_URL}/${selectedId}` : API_URL;
-
-  fetch(url, {
-    method,
+  fetch(API_URL, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formData)
   })
     .then(res => res.json())
     .then(data => {
-      if (method === 'POST') {
-        renderCard(data);
-      } else {
-        updateCard(data);
-      }
+      renderCard(data);
       form.reset();
-      selectedId = null;
     });
 });
 
@@ -127,53 +119,30 @@ function renderCard(data) {
     <h5>${data.firstName} ${data.lastName}</h5>
     <p><strong>Email:</strong> ${data.email}</p>
     <p>${data.message}</p>
-    <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+    <button class="btn btn-danger btn-sm delete-btn">Delete</button>
   `;
 
-  div.querySelector('.edit-btn').addEventListener('click', () => loadForEdit(data));
+  div.querySelector('.delete-btn').addEventListener('click', () => deleteEntry(data.id, div));
   cont.appendChild(div);
 }
 
-// Update existing card after PATCH
-function updateCard(data) {
-  const card = cont.querySelector(`.card[data-id="${data.id}"]`);
-  if (card) {
-    card.querySelector('h5').textContent = `${data.firstName} ${data.lastName}`;
-    card.querySelector('p').textContent = data.message;
-  }
+// Delete entry
+function deleteEntry(id, cardElement) {
+  if (!confirm("Are you sure you want to delete this entry?")) return;
+
+  fetch(`${API_URL}/${id}`, {
+    method: 'DELETE'
+  })
+    .then(res => {
+      if (res.ok) {
+        cardElement.remove();
+      } else {
+        alert("Failed to delete. Try again.");
+      }
+    });
 }
 
-// Load data into form for editing
-function loadForEdit(data) {
-  form.email.value = data.email;
-  form.firstName.value = data.firstName;
-  form.lastName.value = data.lastName;
-  form.message.value = data.message;
-
-  form.querySelectorAll(`input[placeholder="Feet"]`)[0].value = data.measurements?.height?.feet || '';
-  form.querySelectorAll(`input[placeholder="Inches"]`)[0].value = data.measurements?.height?.inches || '';
-  form.querySelector(`input[placeholder="Pounds"]`).value = data.measurements?.weight || '';
-
-  // Set other measurement fields
-  setValueByLabel("Chest (in)", data.measurements?.chest);
-  setValueByLabel("Natural Waist (in)", data.measurements?.naturalWaist);
-  setValueByLabel("Bicep (in)", data.measurements?.bicep);
-  setValueByLabel("Pant Waist (in)", data.measurements?.pantWaist);
-  setValueByLabel("Hip (in)", data.measurements?.hip);
-  setValueByLabel("Inseam (in)", data.measurements?.inseam);
-  setValueByLabel("Neck (in)", data.measurements?.neck);
-
-  selectedId = data.id;
-}
-
-function setValueByLabel(label, value) {
-  const input = Array.from(form.querySelectorAll('label'))
-    .find(el => el.textContent.includes(label))
-    ?.nextElementSibling;
-  if (input && value !== undefined) input.value = value;
-}
-
-// Optional: Load existing records on page load
+// Optional: Load existing entries on page load
 window.addEventListener('DOMContentLoaded', () => {
   fetch(API_URL)
     .then(res => res.json())
