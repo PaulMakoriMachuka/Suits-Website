@@ -62,11 +62,22 @@ const API_URL = "http://localhost:3000/submissions"; // JSON Server
  
 let selectedId = null;
 
-// Handle form submission (POST)
-form.addEventListener('submit', function (e) {
+
+
+
+
+// On page load: fetch and display all records
+window.addEventListener('DOMContentLoaded', () => {
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(data => data.forEach(renderCard));
+});
+
+// Handle form submit (POST or PATCH)
+form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const formData = {
+  const data = {
     email: form.email.value,
     firstName: form.firstName.value,
     lastName: form.lastName.value,
@@ -87,19 +98,27 @@ form.addEventListener('submit', function (e) {
     }
   };
 
-  fetch(API_URL, {
-    method: 'POST',
+  const method = selectedId ? 'PATCH' : 'POST';
+  const url = selectedId ? `${API_URL}/${selectedId}` : API_URL;
+
+  fetch(url, {
+    method,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
+    body: JSON.stringify(data)
   })
     .then(res => res.json())
-    .then(data => {
-      renderCard(data);
+    .then(record => {
+      if (method === 'POST') {
+        renderCard(record);
+      } else {
+        updateCard(record);
+      }
       form.reset();
+      selectedId = null;
     });
 });
 
-// Helpers to get input values
+// Helpers
 function getValue(placeholder, index = 0) {
   return form.querySelectorAll(`input[placeholder="${placeholder}"]`)[index]?.valueAsNumber || null;
 }
@@ -109,42 +128,83 @@ function getValueByLabel(label) {
     ?.nextElementSibling?.valueAsNumber || null;
 }
 
-// Render a new card
+// Render individual card
 function renderCard(data) {
-  const div = document.createElement('div');
-  div.className = 'card p-3 mb-3';
-  div.dataset.id = data.id;
+  const card = document.createElement('div');
+  card.className = 'card p-3 mb-3';
+  card.dataset.id = data.id;
 
-  div.innerHTML = `
+  card.innerHTML = `
     <h5>${data.firstName} ${data.lastName}</h5>
     <p><strong>Email:</strong> ${data.email}</p>
-    <p>${data.message}</p>
-    <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+    <p><strong>Message:</strong> ${data.message}</p>
+    <p><strong>Measurements:</strong></p>
+    <ul class="ms-3">
+      <li><strong>Height:</strong> ${data.measurements.height.feet || '—'} ft ${data.measurements.height.inches || '—'} in</li>
+      <li><strong>Weight:</strong> ${data.measurements.weight || '—'} lbs</li>
+      <li><strong>Chest:</strong> ${data.measurements.chest || '—'} in</li>
+      <li><strong>Waist (Natural):</strong> ${data.measurements.naturalWaist || '—'} in</li>
+      <li><strong>Bicep:</strong> ${data.measurements.bicep || '—'} in</li>
+      <li><strong>Pant Waist:</strong> ${data.measurements.pantWaist || '—'} in</li>
+      <li><strong>Hip:</strong> ${data.measurements.hip || '—'} in</li>
+      <li><strong>Inseam:</strong> ${data.measurements.inseam || '—'} in</li>
+      <li><strong>Neck:</strong> ${data.measurements.neck || '—'} in</li>
+    </ul>
+    <div class="mt-2">
+      <button class="btn btn-sm btn-warning me-2">Edit</button>
+      <button class="btn btn-sm btn-danger">Delete</button>
+    </div>
   `;
 
-  div.querySelector('.delete-btn').addEventListener('click', () => deleteEntry(data.id, div));
-  cont.appendChild(div);
+  // Edit
+  card.querySelector('.btn-warning').addEventListener('click', () => {
+    form.email.value = data.email;
+    form.firstName.value = data.firstName;
+    form.lastName.value = data.lastName;
+    form.message.value = data.message;
+
+    setValue("Feet", data.measurements.height.feet);
+    setValue("Inches", data.measurements.height.inches, 1);
+    setValue("Pounds", data.measurements.weight);
+    setByLabel("Chest (in)", data.measurements.chest);
+    setByLabel("Natural Waist (in)", data.measurements.naturalWaist);
+    setByLabel("Bicep (in)", data.measurements.bicep);
+    setByLabel("Pant Waist (in)", data.measurements.pantWaist);
+    setByLabel("Hip (in)", data.measurements.hip);
+    setByLabel("Inseam (in)", data.measurements.inseam);
+    setByLabel("Neck (in)", data.measurements.neck);
+
+    selectedId = data.id;
+  });
+
+  // Delete
+  card.querySelector('.btn-danger').addEventListener('click', () => {
+    if (confirm('Delete this entry?')) {
+      fetch(`${API_URL}/${data.id}`, { method: 'DELETE' })
+        .then(() => card.remove());
+    }
+  });
+
+  cont.appendChild(card);
 }
 
-// Delete entry
-function deleteEntry(id, cardElement) {
-  if (!confirm("Are you sure you want to delete this entry?")) return;
-
-  fetch(`${API_URL}/${id}`, {
-    method: 'DELETE'
-  })
-    .then(res => {
-      if (res.ok) {
-        cardElement.remove();
-      } else {
-        alert("Failed to delete. Try again.");
-      }
-    });
+// Patch: update the existing card
+function updateCard(data) {
+  const oldCard = cont.querySelector(`.card[data-id="${data.id}"]`);
+  if (oldCard) {
+    oldCard.remove(); // Remove the old version
+    renderCard(data); // Add updated version
+  }
 }
 
-// Optional: Load existing entries on page load
-window.addEventListener('DOMContentLoaded', () => {
-  fetch(API_URL)
-    .then(res => res.json())
-    .then(data => data.forEach(renderCard));
-});
+// Helpers to set form values
+function setValue(placeholder, value, index = 0) {
+  const input = form.querySelectorAll(`input[placeholder="${placeholder}"]`)[index];
+  if (input) input.value = value || '';
+}
+function setByLabel(label, value) {
+  const input = Array.from(form.querySelectorAll('label'))
+    .find(el => el.textContent.includes(label))
+    ?.nextElementSibling;
+  if (input) input.value = value || '';
+}
