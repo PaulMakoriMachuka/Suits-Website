@@ -46,7 +46,7 @@ header h1 {
   padding: 1rem;
   margin: 2rem 0;
   scroll-behavior: smooth;
-  background: #f8f9fa;
+  background: #111111;
   border-top: 1px solid #dee2e6;
   border-bottom: 1px solid #dee2e6;
 }
@@ -100,4 +100,9 @@ header h1 {
   font-size: 1rem;
   background-color: #f8f9fa;
   border-radius: 8px;
+}
+
+p{
+  font-size: xx-large;
+  font-style: italic;
 }
