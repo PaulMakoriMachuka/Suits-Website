@@ -85,95 +85,11 @@
       }
     },
     {
-      "id": "5c83",
-      "email": "pppp@gmail",
-      "firstName": "pp",
-      "lastName": "pp",
-      "message": "mm",
-      "measurements": {
-        "height": {
-          "feet": 1,
-          "inches": null
-        },
-        "weight": null,
-        "chest": null,
-        "naturalWaist": null,
-        "bicep": null,
-        "pantWaist": null,
-        "hip": null,
-        "inseam": null,
-        "neck": null
-      }
-    },
-    {
       "id": "5fc6",
       "email": "paulmachukamakori@gmail.com",
       "firstName": "pp",
       "lastName": "mm",
       "message": "mm",
-      "measurements": {
-        "height": {
-          "feet": null,
-          "inches": null
-        },
-        "weight": null,
-        "chest": null,
-        "naturalWaist": null,
-        "bicep": null,
-        "pantWaist": null,
-        "hip": null,
-        "inseam": null,
-        "neck": null
-      }
-    },
-    {
-      "id": "2627",
-      "email": "paulmachukamakori@gmail.com",
-      "firstName": "pp",
-      "lastName": "mm",
-      "message": "mmm",
-      "measurements": {
-        "height": {
-          "feet": null,
-          "inches": null
-        },
-        "weight": null,
-        "chest": null,
-        "naturalWaist": null,
-        "bicep": null,
-        "pantWaist": null,
-        "hip": null,
-        "inseam": null,
-        "neck": null
-      }
-    },
-    {
-      "id": "ca7b",
-      "email": "pppp@gmail",
-      "firstName": "pp",
-      "lastName": "pp",
-      "message": "mm",
-      "measurements": {
-        "height": {
-          "feet": null,
-          "inches": null
-        },
-        "weight": null,
-        "chest": null,
-        "naturalWaist": null,
-        "bicep": null,
-        "pantWaist": null,
-        "hip": null,
-        "inseam": null,
-        "neck": null
-      }
-    },
-    {
-      "id": "240e",
-      "email": "pppp@gmail",
-      "firstName": "pp",
-      "lastName": "pp",
-      "message": "mmm",
       "measurements": {
         "height": {
           "feet": null,

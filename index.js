@@ -63,17 +63,13 @@ const API_URL = "http://localhost:3000/submissions"; // JSON Server
 let selectedId = null;
 
 
-
-
-
-// On page load: fetch and display all records
 window.addEventListener('DOMContentLoaded', () => {
   fetch(API_URL)
     .then(res => res.json())
     .then(data => data.forEach(renderCard));
 });
 
-// Handle form submit (POST or PATCH)
+// Submit form (POST only)
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -98,37 +94,19 @@ form.addEventListener('submit', (e) => {
     }
   };
 
-  const method = selectedId ? 'PATCH' : 'POST';
-  const url = selectedId ? `${API_URL}/${selectedId}` : API_URL;
-
-  fetch(url, {
-    method,
+  fetch(API_URL, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
     .then(res => res.json())
     .then(record => {
-      if (method === 'POST') {
-        renderCard(record);
-      } else {
-        updateCard(record);
-      }
+      renderCard(record);
       form.reset();
-      selectedId = null;
     });
 });
 
-// Helpers
-function getValue(placeholder, index = 0) {
-  return form.querySelectorAll(`input[placeholder="${placeholder}"]`)[index]?.valueAsNumber || null;
-}
-function getValueByLabel(label) {
-  return Array.from(form.querySelectorAll('label'))
-    .find(el => el.textContent.includes(label))
-    ?.nextElementSibling?.valueAsNumber || null;
-}
-
-// Render individual card
+// Render card inside #cont
 function renderCard(data) {
   const card = document.createElement('div');
   card.className = 'card p-3 mb-3';
@@ -151,33 +129,11 @@ function renderCard(data) {
       <li><strong>Neck:</strong> ${data.measurements.neck || '—'} in</li>
     </ul>
     <div class="mt-2">
-      <button class="btn btn-sm btn-warning me-2">Edit</button>
       <button class="btn btn-sm btn-danger">Delete</button>
     </div>
   `;
 
-  // Edit
-  card.querySelector('.btn-warning').addEventListener('click', () => {
-    form.email.value = data.email;
-    form.firstName.value = data.firstName;
-    form.lastName.value = data.lastName;
-    form.message.value = data.message;
-
-    setValue("Feet", data.measurements.height.feet);
-    setValue("Inches", data.measurements.height.inches, 1);
-    setValue("Pounds", data.measurements.weight);
-    setByLabel("Chest (in)", data.measurements.chest);
-    setByLabel("Natural Waist (in)", data.measurements.naturalWaist);
-    setByLabel("Bicep (in)", data.measurements.bicep);
-    setByLabel("Pant Waist (in)", data.measurements.pantWaist);
-    setByLabel("Hip (in)", data.measurements.hip);
-    setByLabel("Inseam (in)", data.measurements.inseam);
-    setByLabel("Neck (in)", data.measurements.neck);
-
-    selectedId = data.id;
-  });
-
-  // Delete
+  // Delete functionality
   card.querySelector('.btn-danger').addEventListener('click', () => {
     if (confirm('Delete this entry?')) {
       fetch(`${API_URL}/${data.id}`, { method: 'DELETE' })
@@ -188,23 +144,12 @@ function renderCard(data) {
   cont.appendChild(card);
 }
 
-// Patch: update the existing card
-function updateCard(data) {
-  const oldCard = cont.querySelector(`.card[data-id="${data.id}"]`);
-  if (oldCard) {
-    oldCard.remove(); // Remove the old version
-    renderCard(data); // Add updated version
-  }
+// Helpers
+function getValue(placeholder, index = 0) {
+  return form.querySelectorAll(`input[placeholder="${placeholder}"]`)[index]?.valueAsNumber || null;
 }
-
-// Helpers to set form values
-function setValue(placeholder, value, index = 0) {
-  const input = form.querySelectorAll(`input[placeholder="${placeholder}"]`)[index];
-  if (input) input.value = value || '';
-}
-function setByLabel(label, value) {
-  const input = Array.from(form.querySelectorAll('label'))
+function getValueByLabel(label) {
+  return Array.from(form.querySelectorAll('label'))
     .find(el => el.textContent.includes(label))
-    ?.nextElementSibling;
-  if (input) input.value = value || '';
+    ?.nextElementSibling?.valueAsNumber || null;
 }
