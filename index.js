@@ -1,5 +1,5 @@
 const form = document.getElementById("form");
-const cont = document.getElementById("cont") || createContainer();
+const write = document.getElementById("write") || createContainer();
 const API_URL = "http://localhost:3000/submissions";
 
 let selectedId = null;
@@ -98,27 +98,27 @@ function renderCard(data) {
 
 
 
-  cont.appendChild(card);
+  write.appendChild(card);
 }
 
-// Fill form for editing
-function fillForm(data) {
-  form.email.value = data.email;
-  form.firstName.value = data.firstName;
-  form.lastName.value = data.lastName;
-  form.message.value = data.message;
+// // Fill form for editing
+// function fillForm(data) {
+//   form.email.value = data.email;
+//   form.firstName.value = data.firstName;
+//   form.lastName.value = data.lastName;
+//   form.message.value = data.message;
 
-  setInput("Feet", data.measurements.height.feet);
-  setInput("Inches", data.measurements.height.inches, 1);
-  setInput("Pounds", data.measurements.weight);
-  setByLabel("Chest (in)", data.measurements.chest);
-  setByLabel("Natural Waist (in)", data.measurements.naturalWaist);
-  setByLabel("Bicep (in)", data.measurements.bicep);
-  setByLabel("Pant Waist (in)", data.measurements.pantWaist);
-  setByLabel("Hip (in)", data.measurements.hip);
-  setByLabel("Inseam (in)", data.measurements.inseam);
-  setByLabel("Neck (in)", data.measurements.neck);
-}
+//   setInput("Feet", data.measurements.height.feet);
+//   setInput("Inches", data.measurements.height.inches, 1);
+//   setInput("Pounds", data.measurements.weight);
+//   setByLabel("Chest (in)", data.measurements.chest);
+//   setByLabel("Natural Waist (in)", data.measurements.naturalWaist);
+//   setByLabel("Bicep (in)", data.measurements.bicep);
+//   setByLabel("Pant Waist (in)", data.measurements.pantWaist);
+//   setByLabel("Hip (in)", data.measurements.hip);
+//   setByLabel("Inseam (in)", data.measurements.inseam);
+//   setByLabel("Neck (in)", data.measurements.neck);
+// }
 
 // Utility: get inputs by placeholder
 function getInput(placeholder, index = 0) {
@@ -150,8 +150,8 @@ function setByLabel(labelText, value) {
 // If #cont doesn't exist, create it
 function createContainer() {
   const div = document.createElement("div");
-  div.id = "cont";
-  div.className = "container mt-5";
+  div.id = "write";
+  //div.className = "container mt-5";
   document.body.appendChild(div);
   return div;
 }
