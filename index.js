@@ -97,29 +97,9 @@ function renderCard(data) {
   });
 
   write.appendChild(card);
-}
-
-// Fill form for editing (if needed)
-function fillForm(data) {
-  form.email.value = data.email;
-  form.firstName.value = data.firstName;
-  form.lastName.value = data.lastName;
-  form.message.value = data.message;
-
-  setInput("Feet", data.measurements.height.feet);
-  setInput("Inches", data.measurements.height.inches, 1);
-  setInput("Pounds", data.measurements.weight);
-  setByLabel("Chest (in)", data.measurements.chest);
-  setByLabel("Natural Waist (in)", data.measurements.naturalWaist);
-  setByLabel("Bicep (in)", data.measurements.bicep);
-  setByLabel("Pant Waist (in)", data.measurements.pantWaist);
-  setByLabel("Hip (in)", data.measurements.hip);
-  setByLabel("Inseam (in)", data.measurements.inseam);
-  setByLabel("Neck (in)", data.measurements.neck);
-}
-
+ }
 // Utility: get input by placeholder
-function getInput(placeholder, index = 0) {
+ function getInput(placeholder, index = 0) {
   return form.querySelectorAll(`input[placeholder="${placeholder}"]`)[index]?.valueAsNumber || null;
 }
 
@@ -145,11 +125,20 @@ function setByLabel(labelText, value) {
   }
 }
 
-// Create container if not present
-function createContainer() {
-  const div = document.createElement("div");
-  div.id = "write";
-  div.className = "container mt-5";
-  tallma.appendChild(div);
-  return div;
-}
+
+
+
+ function createContainer() {
+   const div = document.createElement("div");
+   div.id = "write";
+   div.className = "container mt-5";
+
+   const tallma = document.getElementById("tallma"); // Get the element with ID "tallma"
+   if (tallma) {
+     tallma.appendChild(div); // Append to #tallma instead of <body>
+   } else {
+     console.error("Element with ID 'tallma' not found.");
+   }
+
+   return div;
+ }
